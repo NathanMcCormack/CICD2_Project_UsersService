@@ -6,7 +6,6 @@ class Base(DeclarativeBase):
 
 class UserDB(Base): 
     __tablename__ = "users" 
-    
     id: Mapped[int] = mapped_column(primary_key=True, index=True) 
     first_name: Mapped[str] = mapped_column(String, nullable=False) 
     last_name: Mapped[str] = mapped_column(String, nullable=False) 
@@ -18,7 +17,6 @@ class UserDB(Base):
 
 class AddressDB(Base):
     __tablename__ = "address"
-
     id: Mapped[int] =  mapped_column(primary_key=True)
     address_line1: Mapped[str] = mapped_column(String, nullable=False)
     address_line2: Mapped[str] = mapped_column(String, nullable=True)

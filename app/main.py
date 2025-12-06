@@ -2,7 +2,8 @@ from fastapi import FastAPI, Depends, HTTPException, status, Response
 from sqlalchemy.orm import Session, selectinload
 from sqlalchemy import select 
 from sqlalchemy.exc import IntegrityError 
- 
+from contextlib import asynccontextmanager 
+from fastapi.middleware.cors import CORSMiddleware 
 from .database import engine, SessionLocal 
 from .models import Base, UserDB, AddressDB
 from .schemas import (UserCreate, 
@@ -13,8 +14,20 @@ from .schemas import (UserCreate,
                       AddressUpdate,
                       AddressReadWithOwner)
 
-app = FastAPI()
-Base.metadata.create_all(bind=engine)
+@asynccontextmanager 
+async def lifespan(app: FastAPI): 
+    Base.metadata.create_all(bind=engine)    
+    yield 
+ 
+app = FastAPI(lifespan=lifespan) 
+ 
+# CORS (add this block) 
+app.add_middleware( 
+    CORSMiddleware, 
+    allow_origins=["*"],   # dev-friendly; tighten in prod 
+    allow_methods=["*"], 
+    allow_headers=["*"], 
+) 
 
 def commit_or_rollback(db: Session, error_msg: str):
     try:
@@ -29,11 +42,12 @@ def get_db():
         yield db 
     finally: 
         db.close() 
+        
 
 #------------- Health Check ---------------------
 @app.get("/health")
 def Health_Check():
-    return {"status": "ok"} 
+    return {"status": "ok",  "service": "users"} 
 
 #------------- Users Endpoints ------------------
 
@@ -150,8 +164,8 @@ def Add_New_Address(address: AddressCreate, db: Session = Depends(get_db)):
     return addr
 
 @app.patch("/api/addresses/{address_id}", response_model=AddressRead)
-def update_project(project_id: int, payload: AddressUpdate, db: Session = Depends(get_db)):
-    address = db.get(AddressDB, project_id)
+def update_address(address_id: int, payload: AddressUpdate, db: Session = Depends(get_db)):
+    address = db.get(AddressDB, address_id)
     if not address:
         raise HTTPException(status_code=404, detail="Address not found")
 
@@ -168,8 +182,8 @@ def update_project(project_id: int, payload: AddressUpdate, db: Session = Depend
     return address
 
 @app.put("/api/addresses/{address_id}", response_model=AddressRead)
-def update_project(project_id: int, payload: AddressCreate, db: Session = Depends(get_db)):
-    address = db.get(AddressDB, project_id)
+def update_address(address_id: int, payload: AddressCreate, db: Session = Depends(get_db)):
+    address = db.get(AddressDB, address_id)
     if not address:
         raise HTTPException(status_code=404, detail="Address not found")
     for field_name, field_value in payload.model_dump().items():

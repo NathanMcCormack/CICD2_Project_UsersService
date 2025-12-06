@@ -22,6 +22,7 @@ class UserCreate(BaseModel):
     student_id: StudentId 
  
 class UserRead(BaseModel): 
+    model_config = ConfigDict(from_attributes=True)
     id: int 
     first_name: NameStr 
     last_name: NameStr 
@@ -29,8 +30,6 @@ class UserRead(BaseModel):
     phone: PhoneStr 
     age: AgeInt 
     student_id: StudentId 
- 
-    model_config = ConfigDict(from_attributes=True)
 
 class UserUpdate(BaseModel): #Optional is for PATCH endpoints
     first_name: Optional[str] = None

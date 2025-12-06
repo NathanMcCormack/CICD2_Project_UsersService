@@ -25,7 +25,8 @@ def client():
         # hand the client to the test 
         yield c 
         # --- teardown happens when the 'with' block exits --- 
- 
+        #  
+
  #-------------- User Tests -----------------
 def test_create_user(client): 
     r = client.post("/api/users", json={"first_name":"Darragh","last_name":"McCormack","email":"Darragh@atu.ie", "phone":"+353 083 555 5555","age":21,"student_id":"G00123456"}) 
@@ -88,3 +89,5 @@ def test_put_user_not_found(client):
     r = client.put("/api/users/424242", json=payload)
     assert r.status_code == 404
     assert r.json()["detail"] == "User not found"
+
+
