@@ -2,7 +2,8 @@ from fastapi import FastAPI, Depends, HTTPException, status, Response
 from sqlalchemy.orm import Session, selectinload
 from sqlalchemy import select 
 from sqlalchemy.exc import IntegrityError 
- 
+from contextlib import asynccontextmanager 
+from fastapi.middleware.cors import CORSMiddleware 
 from .database import engine, SessionLocal 
 from .models import Base, UserDB, AddressDB
 from .schemas import (UserCreate, 
@@ -13,8 +14,20 @@ from .schemas import (UserCreate,
                       AddressUpdate,
                       AddressReadWithOwner)
 
-app = FastAPI()
-Base.metadata.create_all(bind=engine)
+@asynccontextmanager 
+async def lifespan(app: FastAPI): 
+    Base.metadata.create_all(bind=engine)    
+    yield 
+ 
+app = FastAPI(lifespan=lifespan) 
+ 
+# CORS (add this block) 
+app.add_middleware( 
+    CORSMiddleware, 
+    allow_origins=["*"],   # dev-friendly; tighten in prod 
+    allow_methods=["*"], 
+    allow_headers=["*"], 
+) 
 
 def commit_or_rollback(db: Session, error_msg: str):
     try:
