@@ -1,6 +1,4 @@
 UserServiceAPP = app.main:app 
-PID_FILE = .uvicorn.pid 
-
 install: 
 	pip install -r requirements.txt 
 
