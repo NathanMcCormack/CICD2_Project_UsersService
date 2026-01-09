@@ -1,6 +1,4 @@
-PaymentServiceAPP = PaymentService.app.main:app 
-ClubServiceAPP = ClubService.app.main:app 
-UserServiceAPP = UserService.app.main:app 
+UserServiceAPP = app.main:app 
 PID_FILE = .uvicorn.pid 
 
 install: 
