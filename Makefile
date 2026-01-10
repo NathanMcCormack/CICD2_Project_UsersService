@@ -1,8 +1,4 @@
-PaymentServiceAPP = PaymentService.app.main:app 
-ClubServiceAPP = ClubService.app.main:app 
-UserServiceAPP = UserService.app.main:app 
-PID_FILE = .uvicorn.pid 
-
+UserServiceAPP = app.main:app 
 install: 
 	pip install -r requirements.txt 
 

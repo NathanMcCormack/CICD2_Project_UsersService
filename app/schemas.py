@@ -6,7 +6,7 @@ NameStr = Annotated[str, StringConstraints(min_length=2, max_length=50)]
 StudentId = Annotated[str, StringConstraints(pattern=r"^G00\d{6}")] 
 AgeInt = Annotated[int, Ge(16), Le(100)]
 PhoneStr = Annotated[str, StringConstraints(pattern=r'^\+353\s0[0-9]{2}\s[0-9]{3}\s[0-9]{4}$')] #Irish phone number format: "+353 0xx xxx xxxx"
-AddrStr = Annotated[str, StringConstraints(min_length=8, max_length=100)]
+AddrStr = Annotated[str, StringConstraints(min_length=3, max_length=100)]
 AptInt = Annotated[int, Ge(0), Le(999999)]
 CountyStr = Annotated[str, StringConstraints(min_length=4, max_length=15)] 
 PostCodeStr = Annotated[str, StringConstraints(pattern=r'^[A-Z0-9]{3}\s?[A-Z0-9]{4}$')] # e.g. "D02 X285" or "A65F4E2"
