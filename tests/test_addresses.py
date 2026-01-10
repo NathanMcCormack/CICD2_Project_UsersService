@@ -167,26 +167,6 @@ def test_delete_user_cascades_address_delete(client):
     assert r_get.status_code == 404
 
 
-def test_delete_address_route_currently_422_without_query_param(client):
-    r = client.delete("/api/adrdesses/1")
-    assert r.status_code == 422
-
-
-def test_delete_address_ok_with_query_param_workaround(client):
-    u = client.post(
-        "/api/users",
-        json=user_payload(email="nathan.deladdr@atu.ie", sid="G00130090", phone="+353 091 999 0000"),
-    ).json()
-    a = client.post("/api/addresses", json=address_payload(resident_id=u["id"], town="Ballinderreen")).json()
-
-    r1 = client.delete(f"/api/adrdesses/{a['id']}?address_id={a['id']}")
-    assert r1.status_code == 204
-
-    r2 = client.delete(f"/api/adrdesses/{a['id']}?address_id={a['id']}")
-    assert r2.status_code == 404
-    assert "not found" in r2.json()["detail"].lower()
-
-
 # --- 422 validation tests for addresses ---
 
 @pytest.mark.parametrize("bad_post_code", ["badcode", "D0 2X285", "D02X28", "D02X2855", ""])

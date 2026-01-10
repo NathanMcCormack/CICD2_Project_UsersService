@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError 
 from contextlib import asynccontextmanager 
 from fastapi.middleware.cors import CORSMiddleware 
-from .database import engine, SessionLocal 
+from .database import engine, get_db 
 from .models import Base, UserDB, AddressDB
 from .schemas import (UserCreate, 
                       UserRead, 
@@ -34,15 +34,7 @@ def commit_or_rollback(db: Session, error_msg: str):
         db.commit()
     except IntegrityError:
         db.rollback()
-        raise HTTPException(status_code=409, detail=error_msg)
-
-def get_db(): 
-    db = SessionLocal() 
-    try: 
-        yield db 
-    finally: 
-        db.close() 
-        
+        raise HTTPException(status_code=409, detail=error_msg) 
 
 #------------- Health Check ---------------------
 @app.get("/health")
@@ -197,7 +189,7 @@ def update_address(address_id: int, payload: AddressCreate, db: Session = Depend
     return address
 
 # DELETE a user by ID (triggers ORM cascade -> deletes their projects too)
-@app.delete("/api/adrdesses/{adrdess_id}", status_code=204)
+@app.delete("/api/addresses/{address_id}", status_code=204)
 def Delete_Address(address_id: int, db: Session = Depends(get_db)) -> Response:
     address = db.get(AddressDB, address_id)
     if not address:
